@@ -40,10 +40,6 @@ app.get("/", (req, res) => {
     data: null,
   });
 });
-// Page Not Found Error Handling Middleware
-app.use("*", (req, res) => {
-  res.status(404).send("API endpoint does not found");
-});
 // API routes
 app.use("/api/user", userRoutes);
 app.use("/api/admin", adminRoutes);
