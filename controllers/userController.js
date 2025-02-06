@@ -221,17 +221,46 @@ const getprofilebyid = async (req, res) => {
   }
 };
 
-const getprofile =async(req,res)=>{
+const getprofile = async (req, res) => {
   try {
-    const user =await User.find();
-    if(!user){
-      return res.status(404).json({ message: "User not found" });
+    const { searchTerm, page = 1, limit = 10, id } = req.query;
+
+    // Build the query based on provided id (if any)
+    const query = {};
+
+    // If an id is provided, filter by that id
+    if (id) {
+      query._id = id;
     }
-    const countuser =await User.countDocuments();
-    res.status(200).json({ message: "Users fetched successfully", user,countuser });
+
+    // If a search term is provided, perform a case-insensitive search on the name
+    if (searchTerm) {
+      query.name = { $regex: searchTerm, $options: 'i' }; // Regex for name matching
+    }
+
+    // Apply pagination using skip and limit
+    const users = await User.find(query)
+      .skip((page - 1) * limit)  // Skip results based on the current page
+      .limit(Number(limit));     // Limit the number of results
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    // Get the total count of users matching the query for pagination
+    const countuser = await User.countDocuments(query);
+
+    res.status(200).json({
+      message: "Users fetched successfully",
+      users,
+      countuser,
+      totalPages: Math.ceil(countuser / limit),
+      currentPage: Number(page),
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
+
 
 module.exports = { signupUser, verifyOtp, loginUser, loginVerify ,getprofile,updateprofile,getprofilebyid};

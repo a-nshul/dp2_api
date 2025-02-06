@@ -2,7 +2,6 @@ const express = require("express");
 const upload = require('../middleware/uploadfile');
 
 const { signupUser, verifyOtp, loginUser, loginVerify ,updateprofile,getprofilebyid,getprofile} = require("../controllers/userController");
-const {protect} =require("../middleware/authMiddleware");
 const router = express.Router();
 
 
@@ -11,7 +10,7 @@ router.post("/signup/verify", verifyOtp);
 router.post("/login", loginUser);
 router.post("/login/verify", loginVerify);
 // router.put('/updateprofile/:id',protect,upload.single('profilePhoto'), updateprofile);
-router.put('/updateprofile/:id', protect, upload.fields([
+router.put('/updateprofile/:id',  upload.fields([
     { name: 'profilePhoto', maxCount: 1 }, 
     { name: 'resume', maxCount: 1 },
     { name: 'idProof', maxCount: 1 },
