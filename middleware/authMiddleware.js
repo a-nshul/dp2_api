@@ -58,26 +58,4 @@ const protect = async (req, res, next) => {
   }
 };
 
-const isAdmin = async (req, res, next) => {
-  const adminId = req.headers["admin-id"]; 
-
-  if (!adminId) {
-      return res.status(403).json({ message: "Admin ID is required in headers" });
-  }
-
-  try {
-      const admin = await Admin.findById(adminId);
-
-      if (!admin) {
-          return res.status(403).json({ message: "Not authorized as an admin" });
-      }
-
-      req.admin = admin;
-      next();
-  } catch (error) {
-      console.error("Error in isAdmin middleware:", error);
-      res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-module.exports = { protect, isAdmin };
+module.exports = { protect };

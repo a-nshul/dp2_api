@@ -1,10 +1,8 @@
 const express = require("express");
 const upload = require('../middleware/uploadfile');
 
-const { signupUser, verifyOtp, loginUser, loginVerify ,
-  getprofile,updateprofile,createUser,getUsers,
-  updateUser,deleteUser,getprofilebyid} = require("../controllers/userController");
-const {protect,isAdmin} =require("../middleware/authMiddleware");
+const { signupUser, verifyOtp, loginUser, loginVerify ,updateprofile,getprofilebyid,getprofile} = require("../controllers/userController");
+const {protect} =require("../middleware/authMiddleware");
 const router = express.Router();
 
 
@@ -21,10 +19,4 @@ router.put('/updateprofile/:id', protect, upload.fields([
   ]), updateprofile);
   router.get('/getprofile',getprofile);
   router.get('/getprofile/:id',getprofilebyid);
- // Admin Routes
- router.post("/admin/create-user", protect, isAdmin, createUser);
- router.put("/admin/update-user/:id", protect, isAdmin, updateUser);
- router.delete("/admin/delete-user/:id", protect, isAdmin, deleteUser);
- router.get("/admin/users", protect, isAdmin, getUsers);
-//  router.get("/admin/user/:id", protect, isAdmin, getUserById);
 module.exports = router;

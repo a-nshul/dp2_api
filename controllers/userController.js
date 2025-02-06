@@ -127,6 +127,7 @@ const loginVerify = async (req, res) => {
     );
 
     if (verifyResponse.data.Status !== "Success") {
+      console.error(verifyResponse.data.Message);
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
@@ -232,59 +233,5 @@ const getprofile =async(req,res)=>{
     res.status(500).json({ message: error.message });
   }
 }
-const createUser =async(req,res)=>{
-  try {
-    const newUser =await User.create(req.body);
-    res.status(201).json({ message: "User created successfully", user: newUser });
-  } catch (error) {
-    res.status(500).json({ message:error.message});
-  }
-}
 
-const getUsers = async(req,res)=>{
-  try {
-    const users = await User.find({});
-    res.status(200).json({ message: "Users fetched successfully", users });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-const getUserById = async(req,res)=>{
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json({ message: "User fetched successfully", user });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-const deleteUser = async(req,res)=>{
-  try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-const updateUser = async(req,res)=>{
-  try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, 
-      runValidators: true, 
-    });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json({ message: "User updated successfully", user });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-module.exports = { signupUser, verifyOtp, loginUser, loginVerify ,getprofile,updateprofile,createUser,getUsers,getUserById,deleteUser,updateUser,getprofilebyid};
+module.exports = { signupUser, verifyOtp, loginUser, loginVerify ,getprofile,updateprofile,getprofilebyid};
