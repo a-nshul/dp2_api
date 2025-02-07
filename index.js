@@ -6,6 +6,8 @@ const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const adminRoutes =require("./routes/adminRoutes");
+const formRoutes =require("./routes/fileRoutes");
+const responseRoutes = require("./routes/responseRoutes");
 dotenv.config();
 connectDB();
 
@@ -43,6 +45,8 @@ app.get("/", (req, res) => {
 // API routes
 app.use("/api/user", userRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/form", formRoutes);
+app.use("/api/response", responseRoutes);
 // Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
