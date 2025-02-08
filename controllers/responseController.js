@@ -1,15 +1,15 @@
 const Response = require("../models/responseModel");
 
-// Submit a response to a form
+// Submit a response
 const submitResponse = async (req, res) => {
     try {
-        const { formId, userId, answers } = req.body;
+        const { userId, answers } = req.body;
 
-        if (!formId || !userId || !answers || !Array.isArray(answers)) {
+        if (!userId || !answers || !Array.isArray(answers)) {
             return res.status(400).json({ message: "Invalid response data" });
         }
 
-        const newResponse = new Response({ formId, userId, answers });
+        const newResponse = new Response({ userId, answers });
         await newResponse.save();
 
         res.status(201).json({ message: "Response submitted successfully", response: newResponse });
@@ -18,11 +18,11 @@ const submitResponse = async (req, res) => {
     }
 };
 
-// Get all responses for a form
-const getResponsesByForm = async (req, res) => {
+// Get all responses for a user
+const getResponsesByUser = async (req, res) => {
     try {
-        const { formId } = req.params;
-        const responses = await Response.find({ formId }).populate("userId", "mobileno");
+        const { userId } = req.params;
+        const responses = await Response.find({ userId }).populate("userId", "mobileno");
 
         res.status(200).json({ message: "Responses fetched", responses });
     } catch (error) {
@@ -33,8 +33,8 @@ const getResponsesByForm = async (req, res) => {
 // Get a single response by ID
 const getResponseById = async (req, res) => {
     try {
-        const { responseId } = req.params;
-        const response = await Response.findById(responseId).populate("userId", "mobileno");
+        const { id } = req.params;
+        const response = await Response.findById(id).populate("userId", "mobileno");
 
         if (!response) return res.status(404).json({ message: "Response not found" });
 
@@ -47,8 +47,8 @@ const getResponseById = async (req, res) => {
 // Update a response
 const updateResponse = async (req, res) => {
     try {
-        const { responseId } = req.params;
-        const updatedResponse = await Response.findByIdAndUpdate(responseId, req.body, { new: true }).populate("userId", "mobileno");
+        const { id } = req.params;
+        const updatedResponse = await Response.findByIdAndUpdate(id, req.body, { new: true }).populate("userId", "mobileno");
 
         if (!updatedResponse) return res.status(404).json({ message: "Response not found" });
 
@@ -61,8 +61,8 @@ const updateResponse = async (req, res) => {
 // Delete a response
 const deleteResponse = async (req, res) => {
     try {
-        const { responseId } = req.params;
-        const deletedResponse = await Response.findByIdAndDelete(responseId);
+        const { id } = req.params;
+        const deletedResponse = await Response.findByIdAndDelete(id);
 
         if (!deletedResponse) return res.status(404).json({ message: "Response not found" });
 
@@ -74,7 +74,7 @@ const deleteResponse = async (req, res) => {
 
 module.exports = { 
     submitResponse, 
-    getResponsesByForm, 
+    getResponsesByUser, 
     getResponseById, 
     updateResponse, 
     deleteResponse 

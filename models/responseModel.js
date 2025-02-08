@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const responseSchema = new mongoose.Schema({
-    formId: { type: mongoose.Schema.Types.ObjectId, ref: 'Form', required: true }, // Link to Form
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Link to User
     answers: [
         {

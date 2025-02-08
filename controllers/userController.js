@@ -146,61 +146,30 @@ const loginVerify = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+// Update Profile Fields
+const updateProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { fields } = req.body;
 
-// const updateprofile = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const updateData = req.body;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid User ID format" });
+    }
 
-//     // Handle file uploads
-//     if (req.files) {
-//       if (req.files.profilePhoto) {
-//         updateData.personalDetails = updateData.personalDetails || {};
-//         updateData.personalDetails.profilePhoto = req.files.profilePhoto[0].path;
-//       }
-//       if (req.files.resume) {
-//         updateData.documentUploads = updateData.documentUploads || {};
-//         updateData.documentUploads.resume = req.files.resume[0].path;
-//       }
-//       if (req.files.idProof) {
-//         updateData.documentUploads = updateData.documentUploads || {};
-//         updateData.documentUploads.idProof = req.files.idProof[0].path;
-//       }
-//       if (req.files.addressProof) {
-//         updateData.documentUploads = updateData.documentUploads || {};
-//         updateData.documentUploads.addressProof = req.files.addressProof[0].path;
-//       }
-//     }
+    const user = await User.findById(id);
 
-//     // Ensure all nested sections are initialized to avoid overwriting
-//     updateData.personalDetails = updateData.personalDetails || {};
-//     updateData.contactInformation = updateData.contactInformation || {};
-//     updateData.addressDetails = updateData.addressDetails || {};
-//     updateData.professionalDetails = updateData.professionalDetails || {};
-//     updateData.matrimonyDetails = updateData.matrimonyDetails || {};
-//     updateData.propertyDetails = updateData.propertyDetails || {};
-//     updateData.additionalFeatures = updateData.additionalFeatures || {};
-//     updateData.documentUploads = updateData.documentUploads || {};
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-//     // Log the updated data
-//     console.log("Updated Profile Data: ", updateData);
+    user.fields = fields;
+    await user.save();
 
-//     // Update the user
-//     const user = await User.findByIdAndUpdate(id, updateData, {
-//       new: true, // Return the updated user
-//       runValidators: true, // Validate the updated data according to the schema
-//     });
-
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     res.status(200).json({ message: "Profile updated successfully", user });
-//   } catch (error) {
-//     return res.status(500).json({ message: error.message });
-//   }
-// };
-
+    return res.status(200).json({ message: "Profile updated successfully", user });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 const getprofilebyid = async (req, res) => {
   try {
     const { id } = req.params;
@@ -263,4 +232,4 @@ const getprofile = async (req, res) => {
 };
 
 
-module.exports = { signupUser, verifyOtp, loginUser, loginVerify ,getprofile,getprofilebyid};
+module.exports = { signupUser, verifyOtp, loginUser, updateProfile,loginVerify ,getprofile,getprofilebyid};

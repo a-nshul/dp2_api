@@ -1,12 +1,20 @@
 const mongoose = require("mongoose");
-const userSchema = mongoose.Schema(
+
+const fieldSchema = new mongoose.Schema({
+    label: { type: String, required: true },
+    type: { type: String, required: true },
+    required: { type: Boolean, default: false }
+});
+
+const userSchema = new mongoose.Schema(
   {
-    mobileno:{
-      type:String,
+    mobileno: {
+      type: String,
       unique: true,
       required: false,
       trim: true,
-    }
+    },
+    fields: { type: [fieldSchema], default: [] } // Add fields similar to Form schema
   },
   { timestamps: true }
 );
