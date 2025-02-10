@@ -4,6 +4,11 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
 const Response =require("../models/responseModel");
 const mongoose = require("mongoose");
+const crypto = require("crypto");
+// Generate a secure random key
+const generateKey = () => {
+  return crypto.randomBytes(32).toString("hex");
+};
 // Admin Signup
 const signupAdmin = async (req, res) => {
     try {
@@ -166,9 +171,14 @@ const deleteAdmin = async (req, res) => {
       if(existingMobileno){
         return res.status(400).json({ message: "User already exists with this mobileno." });
       }
+        // ✅ Generate `apiKey` and `secretKey`
+       const apiKey = generateKey();
+       const secretKey = generateKey();
       const createuser =await User.create({
         mobileno,
-        fields
+        fields,
+        apiKey,
+        secretKey,
       })
       return res.status(200).json({
         message: "User created successfully",

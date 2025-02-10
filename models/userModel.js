@@ -14,7 +14,21 @@ const userSchema = new mongoose.Schema(
       required: false,
       trim: true,
     },
-    fields: { type: [fieldSchema], default: [] } // Add fields similar to Form schema
+    fields: { type: [fieldSchema], default: [] } ,// Add fields similar to Form schema
+    apiKey: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows multiple documents without apiKey
+    },
+    secretKey: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

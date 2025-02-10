@@ -1,5 +1,6 @@
 const User =require("../models/userModel");
 const axios = require("axios");
+const crypto = require("crypto");
 const generateToken = require("../config/generateToken");
 const mongoose = require("mongoose");
 // Send OTP for Signup
@@ -127,25 +128,37 @@ const loginVerify = async (req, res) => {
     );
 
     if (verifyResponse.data.Status !== "Success") {
-      console.error(verifyResponse.data.Message);
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
-    const user = await User.findOne({ mobileno });
+    let user = await User.findOne({ mobileno });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Generate API Key & Secret Key if not already generated
+    if (!user.apiKey || !user.secretKey) {
+      user.apiKey = crypto.randomBytes(32).toString("hex");
+      user.secretKey = crypto.randomBytes(64).toString("hex");
+      await user.save();
+    }
+
     return res.status(200).json({
       message: "Login successful",
-      user,
-      token: generateToken(user._id),
+      user: {
+        _id: user._id,
+        mobileno: user.mobileno,
+        apiKey: user.apiKey,
+        secretKey: user.secretKey,
+      },
+      token: generateToken(user._id), // Using generateToken function
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
+
 // Update Profile Fields
 const updateProfile = async (req, res) => {
   try {
@@ -231,5 +244,24 @@ const getprofile = async (req, res) => {
   }
 };
 
+/**
+ * Fetch User Details with API Key Authentication
+ */
+const fetchUser = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user._id }).select("mobileno fields"); 
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-module.exports = { signupUser, verifyOtp, loginUser, updateProfile,loginVerify ,getprofile,getprofilebyid};
+    return res.status(200).json({
+      _id: user._id,
+      mobileno: user.mobileno,
+      fields: user.fields ?? [],
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+module.exports = { fetchUser,signupUser, verifyOtp, loginUser, updateProfile,loginVerify ,getprofile,getprofilebyid};
