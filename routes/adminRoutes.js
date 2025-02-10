@@ -5,7 +5,9 @@ const {
   getAdminById,
   getAllAdmins,
   updateAdmin,
-  deleteAdmin,
+  deleteAdmin,createUser,getUser,
+  updateuser,deleteUser,getUserById,
+  submitResponse,getsubmitResponse,updateAdminResponse,deleteAdminResponse
 } = require("../controllers/adminController");
 const { protect } = require("../middleware/authMiddleware");
 
@@ -23,9 +25,14 @@ router.delete("/:id",  deleteAdmin);
 
 
 //CRUD for user data with admin id 
-// router.post("/create-user", createUser);
-// router.get("/get-user", getUser);
-// router.get("/get-user/:id",  getUserById);  
-// router.put("/update-user/:id",  updateuser);
-// router.delete("/delete-user/:id", deleteUser);
+router.get("/get/user", getUser);
+router.post("/create-user", createUser);
+router.get("/get/user/:id",  getUserById);  
+router.put("/update/user/:id",  updateuser);
+router.delete("/delete/user/:id", deleteUser);
+//CRUD for submit response 
+router.post("/submit-response/:userId", submitResponse);
+router.get("/submit-response/:userId", getsubmitResponse);
+router.put("/submit-response/:responseId",updateAdminResponse);
+router.delete("/submit-response/:userId",deleteAdminResponse);
 module.exports = router;
