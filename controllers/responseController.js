@@ -12,7 +12,16 @@ const submitResponse = async (req, res) => {
         const newResponse = new Response({ userId, answers });
         await newResponse.save();
 
-        res.status(201).json({ message: "Response submitted successfully", response: newResponse });
+        // Populate user details fully
+        const populatedResponse = await Response.findById(newResponse._id).populate({
+            path: "userId",
+            select: "mobileno fields apiKey secretKey active" // Specify the fields to include
+        });
+
+        res.status(201).json({ 
+            message: "Response submitted successfully", 
+            response: populatedResponse 
+        });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
@@ -22,7 +31,10 @@ const submitResponse = async (req, res) => {
 const getResponsesByUser = async (req, res) => {
     try {
         const { userId } = req.params;
-        const responses = await Response.find({ userId }).populate("userId", "mobileno");
+        const responses = await Response.find({ userId }).populate({
+            path: "userId",
+            select: "mobileno fields apiKey secretKey active" // Specify the fields to include
+        });
 
         res.status(200).json({ message: "Responses fetched", responses });
     } catch (error) {
@@ -34,7 +46,10 @@ const getResponsesByUser = async (req, res) => {
 const getResponseById = async (req, res) => {
     try {
         const { id } = req.params;
-        const response = await Response.findById(id).populate("userId", "mobileno");
+        const response = await Response.findById(id).populate({
+            path: "userId",
+            select: "mobileno fields apiKey secretKey active" // Specify the fields to include
+        });
 
         if (!response) return res.status(404).json({ message: "Response not found" });
 
@@ -48,7 +63,10 @@ const getResponseById = async (req, res) => {
 const updateResponse = async (req, res) => {
     try {
         const { id } = req.params;
-        const updatedResponse = await Response.findByIdAndUpdate(id, req.body, { new: true }).populate("userId", "mobileno");
+        const updatedResponse = await Response.findByIdAndUpdate(id, req.body, { new: true }).populate({
+            path: "userId",
+            select: "mobileno fields apiKey secretKey active" // Specify the fields to include
+        });
 
         if (!updatedResponse) return res.status(404).json({ message: "Response not found" });
 
