@@ -3,6 +3,7 @@ const axios = require("axios");
 const crypto = require("crypto");
 const generateToken = require("../config/generateToken");
 const mongoose = require("mongoose");
+const Response = require("../models/responseModel");
 // Send OTP for Signup
 const signupUser = async (req, res) => {
   try {
@@ -249,19 +250,27 @@ const getprofile = async (req, res) => {
  */
 const fetchUser = async (req, res) => {
   try {
-    const user = await User.findOne({ _id: req.user._id }).select("mobileno fields"); 
+    const user = await User.findOne({ _id: req.user._id })
+      .select("mobileno fields")
+      .lean(); // Convert Mongoose document to a plain object
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    // Fetch responses related to this user and populate answers
+    const responses = await Response.find({ userId: req.user._id }).select("answers");
 
     return res.status(200).json({
       _id: user._id,
       mobileno: user.mobileno,
       fields: user.fields ?? [],
+      responses: responses ?? [],
     });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
   }
 };
+
 
 module.exports = { fetchUser,signupUser, verifyOtp, loginUser, updateProfile,loginVerify ,getprofile,getprofilebyid};
