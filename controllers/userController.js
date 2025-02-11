@@ -271,6 +271,50 @@ const fetchUser = async (req, res) => {
     return res.status(500).json({ message: "Server error", error });
   }
 };
+const updateUser = async (req, res) => {
+  try {
+      const { mobileno, fields, answers } = req.body;
+      const userId = req.user._id; // Retrieved from API key authentication
 
+      if (!mobileno && !fields && !answers) {
+          return res.status(400).json({ success: false, message: "At least one field (mobileno, fields, answers) is required for update." });
+      }
 
-module.exports = { fetchUser,signupUser, verifyOtp, loginUser, updateProfile,loginVerify ,getprofile,getprofilebyid};
+      let updatedUser, updatedResponse;
+
+      // 🔹 Update User Data (mobileno, fields)
+      if (mobileno || fields) {
+          updatedUser = await User.findByIdAndUpdate(
+              userId,
+              {
+                  ...(mobileno && { mobileno }),
+                  ...(fields && { fields })
+              },
+              { new: true, runValidators: true }
+          );
+      }
+
+      // 🔹 Update Response Data (answers)
+      if (answers && answers.length > 0) {
+          updatedResponse = await Response.findOneAndUpdate(
+              { userId },
+              { $set: { answers } },
+              { new: true, upsert: true }
+          );
+      }
+
+      res.status(200).json({
+          success: true,
+          message: "User and response data updated successfully.",
+          updatedUser,
+          updatedResponse
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+module.exports = { fetchUser,signupUser, verifyOtp, loginUser, 
+  updateProfile,loginVerify ,getprofile,
+  getprofilebyid,updateUser};
