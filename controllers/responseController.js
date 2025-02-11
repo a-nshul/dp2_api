@@ -9,13 +9,21 @@ const submitResponse = async (req, res) => {
             return res.status(400).json({ message: "Invalid response data" });
         }
 
+        // Check if the user already submitted a response
+        const existingResponse = await Response.findOne({ userId });
+
+        if (existingResponse) {
+            return res.status(400).json({ message: "User has already submitted a response. You can only update it." });
+        }
+
+        // Create a new response
         const newResponse = new Response({ userId, answers });
         await newResponse.save();
 
         // Populate user details fully
         const populatedResponse = await Response.findById(newResponse._id).populate({
             path: "userId",
-            select: "mobileno fields apiKey secretKey active" // Specify the fields to include
+            select: "mobileno fields apiKey secretKey active"
         });
 
         res.status(201).json({ 
