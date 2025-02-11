@@ -10,11 +10,11 @@ const submitResponse = async (req, res) => {
         }
 
         // Check if the user already submitted a response
-        const existingResponse = await Response.findOne({ userId });
+        // const existingResponse = await Response.findOne({ userId });
 
-        if (existingResponse) {
-            return res.status(400).json({ message: "User has already submitted a response. You can only update it." });
-        }
+        // if (existingResponse) {
+        //     return res.status(400).json({ message: "User has already submitted a response. You can only update it." });
+        // }
 
         // Create a new response
         const newResponse = new Response({ userId, answers });
